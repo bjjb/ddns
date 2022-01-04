@@ -7,6 +7,15 @@ import (
 	"time"
 )
 
+// env tries to use `genenv` to obtain a string value `k`, falling back to
+// return `fb` if the result is a zero string.
+func env(k, fb string) string {
+	if v := getenv(k); v != "" {
+		return v
+	}
+	return fb
+}
+
 func parseDuration(s string) time.Duration {
 	d, err := time.ParseDuration(s)
 	if err != nil {
@@ -15,7 +24,7 @@ func parseDuration(s string) time.Duration {
 	return d
 }
 
-func recordType(content string) string {
+func detectRecordType(content string) string {
 	ip := net.ParseIP(content)
 	switch {
 	case ip == nil:

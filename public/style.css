@@ -1,0 +1,31 @@
+:root {
+  /* min-height: 100vh; */
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 1em;
+  box-sizing: border-box;
+
+  font-family: sans-serif;
+
+  display: grid;
+  grid-template: "header" auto "main" 1fr "footer" auto;
+}
+
+@media screen and (min-width: 14em) {
+  header h1:before {
+    content: '📛';
+    padding-right: 0.2em;
+  }
+}
+
+footer {
+  font-size: small;
+  text-align: center;
+}
+
+footer a {
+  text-decoration: none;
+}

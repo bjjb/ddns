@@ -2,32 +2,49 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
+	"regexp"
+	"strings"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"gotest.tools/assert"
 )
 
-type testExecutor func() error
-
-func (f testExecutor) Execute() error { return f() }
-
+// Test_main tests that main executes run using standard IO.
 func Test_main(t *testing.T) {
-	called := false
-	defer func(f func(_ []string, _, _ io.Writer) executor) { cmd = f }(cmd)
-	cmd = func(args []string, out, err io.Writer) executor {
-		return testExecutor(func() error { called = true; return nil })
-	}
-	main()
-	assert.Assert(t, called)
-}
+	for _, tc := range []struct {
+		desc     string
+		args     []string
+		out, err string
+		code     int
+		run      func(*cobra.Command, []string)
+	}{
+		{"no args", []string{}, "ddns", "^Error:", 0, nil},
+		{"bad args", []string{"blurp.wibble"}, "^$", "no records updated", 2, nil},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			code := 0
+			bout, berr := new(bytes.Buffer), new(bytes.Buffer)
 
-func Test_cmd(t *testing.T) {
-	args := []string{"-v"}
-	bout, berr := new(bytes.Buffer), new(bytes.Buffer)
-	c := cmd(args, bout, berr)
-	assert.NilError(t, c.Execute())
-	assert.Equal(t, fmt.Sprintf("%s version %s\n", name, version), bout.String())
-	assert.Equal(t, "", berr.String())
+			defer func(f func(int)) { exit = f }(exit)
+			exit = func(i int) { code = i }
+
+			defer func(out, err io.Writer) { stdout, stderr = out, err }(stdout, stderr)
+			stdout, stderr = bout, berr
+
+			defer func(a []string) { args = a }(args)
+			args = tc.args
+
+			defer func(f func(*cobra.Command, []string)) { run = f }(run)
+			if tc.run != nil {
+				run = tc.run
+			}
+
+			main()
+			assert.Equal(t, tc.code, code)
+			assert.Assert(t, regexp.MustCompile(tc.out).MatchString(strings.TrimSpace(bout.String())))
+			assert.Assert(t, regexp.MustCompile(tc.err).MatchString(strings.TrimSpace(berr.String())))
+		})
+	}
 }

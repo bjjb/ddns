@@ -1,0 +1,17 @@
+ddns is a command-line client and server for modifying DNS entries.
+
+Every non-option argument is assumed to be a domain name. For each domain
+name, it looks for a DNS zone which can host that domain, and then creates or
+updates an A or AAAA record in that zone to contain the current public IP
+address.
+
+ddns determines which DNS provider services to use by checking for keys in its
+configuration database, which it finds at `./config.db` or
+`$XDG_CONFIG_HOME/ddns/config.db`. Configuration values may also be supplied
+in the environment (usually in the form `DDNS_<PROVIDER>_<VAR>`, for example
+`DDNS_CLOUDFLARE_AUTH` to configure a CloudFlare provider using an API
+token), or as command-line arguments, such as `--cloudflare-auth`.
+
+It will return 0 if at least one record was updated, and non-zero if any other
+error was encountered (you can check standard error to see what went wrong in
+this case).
