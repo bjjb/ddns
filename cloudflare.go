@@ -22,6 +22,7 @@ type cloudflare struct {
 	auth    string
 	http    *http.Client
 	cmd     *cobra.Command
+	verbose bool
 	zones   []*struct{ id, name string }
 	records map[string][]*struct {
 		id, name, kind, content string
@@ -93,7 +94,7 @@ func (c *cloudflare) createOrUpdateRecord(
 }
 
 func (c *cloudflare) updateRecord(zoneID, id, content string, ttl int) error {
-	if c.cmd != nil {
+	if c.cmd != nil && c.verbose {
 		c.cmd.Printf(
 			"cloudflare updating %s record %s with %s (ttl=%d)...\n",
 			zoneID,
@@ -153,7 +154,7 @@ func (c *cloudflare) createRecord(
 	zoneID, name, kind, content string,
 	ttl int,
 ) error {
-	if c.cmd != nil {
+	if c.cmd != nil && c.verbose {
 		c.cmd.Printf(
 			"cloudflare creating %s record %s (in zone %s) with %s (ttl=%d)...\n",
 			kind,
