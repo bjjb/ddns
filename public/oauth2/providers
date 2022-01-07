@@ -1,0 +1,20 @@
+[
+  {
+    "id": "github",
+    "title": "GitHub",
+    "icon": "/oauth2/github.svg",
+    "href": "/oauth2/github"
+  },
+  {
+    "id": "google",
+    "title": "Google",
+    "icon": "/oauth2/google.svg",
+    "href": "/oauth2/google"
+  },
+  {
+    "id": "twitter",
+    "title": "Twitter",
+    "icon": "/oauth2/twitter.svg",
+    "href": "/oauth2/twitter"
+  }
+]

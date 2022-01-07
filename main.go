@@ -62,6 +62,9 @@ var dsn string = "file::memory:?cache=shared"
 // ipServiceURL is the default URL of an IP Echoing service
 var ipServiceURL = env("DDNS_IP_ECHO_URL", "https://icanhazip.com")
 
+// addr is the address on which the server will listen.
+var addr = env("ADDR", ":http")
+
 // kind is the record type to use. If blank, it'll be detected for new
 // records.
 var kind = ""
@@ -128,9 +131,14 @@ to manage and configure DDNS entries.
 `,
 		Args: cobra.NoArgs,
 		Run: func(c *cobra.Command, args []string) {
-			startServer()
+			if err := runServer(); err != nil {
+				c.PrintErr(err)
+				exit(2)
+			}
 		},
 	}
+	cmd.PersistentFlags().StringVarP(&addr, "addr", "l", addr, "HTTP listen address")
+	cmd.PersistentFlags().StringVarP(&webDir, "www", "w", webDir, "HTTP web root")
 	return cmd
 }
 
@@ -168,9 +176,14 @@ var getIP = func() (string, error) {
 	}
 }
 
-// startServer starts a server.
-var startServer = func() {
+// runServer starts a server.
+var runServer = func() error {
 	log.Printf("starting a server")
+	server := &http.Server{
+		Addr:    addr,
+		Handler: handler(),
+	}
+	return server.ListenAndServe()
 }
 
 // run is the function run by the default command.

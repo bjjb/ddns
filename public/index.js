@@ -1,5 +1,5 @@
 import App from './app.js'
 
-addEventListener('load', (event) => {
-  console.debug(event)
+addEventListener('load', ({ currentTarget }) => {
+  new App(currentTarget)
 })

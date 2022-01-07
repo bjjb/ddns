@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -33,7 +33,7 @@ func updateDNS(name, kind, ip string, ttl time.Duration) error {
 			return nil
 		}
 	}
-	return errors.New("no records updated")
+	return fmt.Errorf("no records updated")
 }
 
 // A dnsManager has functions to applyToCmd, report whether it ownsRecord and
